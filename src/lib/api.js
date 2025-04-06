@@ -38,6 +38,9 @@ export const api = createApi({
         body: booking,
       }),
     }),
+    getBookingsUser: builder.query({
+      query: () => "bookings/user",
+    }),
   }),
 });
 
@@ -45,6 +48,7 @@ export const {
   useGetHotelsQuery,
   useGetHotelByIdQuery,
   useCreateHotelMutation,
+  useGetBookingsUserQuery,
   useCreateBookingMutation,
   useGetHotelsForSearchQuery,
 } = api;

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Copy, Loader2, Bed, Users } from "lucide-react";
+import { CalendarIcon, Loader2, Bed, Users } from "lucide-react";
+import { useRef } from "react";
 import { format, addDays, differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -16,7 +17,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -40,6 +40,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useUser } from "@clerk/clerk-react";
 
 const formSchema = z.object({
   checkIn: z.date({
@@ -52,8 +53,9 @@ const formSchema = z.object({
 });
 
 const BookingForm = ({ hotel }) => {
-  console.log(hotel);
-
+  const dialogCloseRef = useRef(null);
+  const { user } = useUser();
+  const userId = user?.id;
   const [createBooking, { isLoading: isCreateBookingLoading }] =
     useCreateBookingMutation();
   const [nights, setNights] = useState(0);
@@ -85,13 +87,15 @@ const BookingForm = ({ hotel }) => {
     try {
       const loadingToastId = toast.loading("Booking your stay...");
       await createBooking({
-        hotelId: hotel.id,
+        userId: userId,
+        hotelId: hotel._id,
         checkIn: data.checkIn,
         checkOut: data.checkOut,
         guests: parseInt(data.guests),
         totalPrice: totalPrice,
       });
       toast.success("Booking successful", { id: loadingToastId });
+      setTimeout(() => dialogCloseRef.current?.click(), 500)
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while booking your stay");
@@ -101,20 +105,27 @@ const BookingForm = ({ hotel }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Book Now</Button>
+        <Button
+          variant="outline"
+          className="w-fit bg-purple-500 text-white hover:bg-purple-800 hover:text-white py-3 text-lg"
+        >
+          Book Now
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] px-6 py-8">
         <DialogHeader>
-          <DialogTitle>{hotel.name} | Booking</DialogTitle>
-          <DialogDescription>
-            Provide necessary details to create a booking.
+          <DialogTitle className="text-2xl font-semibold text-purple-700">
+            {hotel.name} | Booking
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Provide the necessary details to create a booking.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleBooking)}
-            className="space-y-4"
+            className="space-y-6"
           >
             <div className="grid grid-cols-2 gap-4">
               {/* Check-in Date */}
@@ -123,23 +134,21 @@ const BookingForm = ({ hotel }) => {
                 name="checkIn"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Check-in</FormLabel>
+                    <FormLabel className="text-sm">Check-in</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-medium text-lg",
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
+                            <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -158,7 +167,7 @@ const BookingForm = ({ hotel }) => {
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
+                    <FormMessage className="text-xs text-red-500 mt-1" />
                   </FormItem>
                 )}
               />
@@ -169,24 +178,22 @@ const BookingForm = ({ hotel }) => {
                 name="checkOut"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Check-out</FormLabel>
+                    <FormLabel className="text-sm">Check-out</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild disabled={!checkInDate}>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-medium text-lg",
                               !field.value && "text-muted-foreground",
                               !checkInDate && "opacity-50 cursor-not-allowed"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
+                            <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -204,10 +211,11 @@ const BookingForm = ({ hotel }) => {
                             checkInDate ? addDays(checkInDate, 1) : undefined
                           }
                           initialFocus
+                          className="text-sm"
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
+                    <FormMessage className="text-xs text-red-500 mt-1" />
                   </FormItem>
                 )}
               />
@@ -219,15 +227,15 @@ const BookingForm = ({ hotel }) => {
               name="guests"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Number of Guests</FormLabel>
+                  <FormLabel className="text-sm">Number of Guests</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <div className="flex items-center">
-                          <Users className="h-4 w-4 mr-2" />
+                          <Users className="h-5 w-5 mr-2" />
                           <SelectValue placeholder="Select guests" />
                         </div>
                       </SelectTrigger>
@@ -240,51 +248,56 @@ const BookingForm = ({ hotel }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-xs text-red-500 mt-1" />
                 </FormItem>
               )}
             />
 
             {/* Stay Details */}
             {checkInDate && checkOutDate && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm">
-                    <Bed className="h-4 w-4 mr-2" />
+                    <Bed className="h-5 w-5 mr-2" />
                     {nights} {nights === 1 ? "night" : "nights"}
                   </div>
                   <div className="text-sm">
                     ${hotel.price} x {nights} nights
                   </div>
                 </div>
-                <div className="border-t pt-2 flex justify-between font-medium">
+                <div className="border-t pt-2 flex justify-between font-semibold text-lg">
                   <div>Total</div>
                   <div>${totalPrice.toFixed(2)}</div>
                 </div>
               </div>
             )}
 
-            <DialogFooter className="sm:justify-start">
+            <DialogFooter className="sm:justify-start mt-4">
               <DialogClose asChild>
-                <Button type="button" variant="secondary">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full py-3 text-lg"
+                  ref={dialogCloseRef}
+                >
                   Close
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 variant="primary"
-                className="ml-2"
+                className="ml-2 w-full py-3 text-lg bg-purple-600 hover:bg-purple-700 text-white"
                 disabled={
                   isCreateBookingLoading || !checkInDate || !checkOutDate
                 }
               >
                 {isCreateBookingLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Booking...
                   </>
                 ) : (
-                  "Book now"
+                  "Book Now"
                 )}
               </Button>
             </DialogFooter>

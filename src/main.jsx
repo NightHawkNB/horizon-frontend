@@ -18,6 +18,7 @@ import { Provider } from "react-redux";
 
 import { ClerkProvider } from "@clerk/clerk-react";
 import AdminProtectedLayout from "./layouts/admin-protected-layout";
+import ScrollToTop from "./components/ScrollToTop";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")).render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <Provider store={store}>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route element={<RootLayout />}>
               <Route element={<MainLayout />}>

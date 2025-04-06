@@ -1,39 +1,57 @@
 import { MapPin, Star } from "lucide-react";
 import { Link } from "react-router";
 
-function HotelCard(props) {
+function HotelCard({ hotel, confidence }) {
   return (
     <Link
-      to={`/hotels/${props.hotel._id}`}
-      key={props.hotel._id}
-      className="block group relative"
+      to={`/hotels/${hotel._id}`}
+      key={hotel._id}
+      className="block group relative transition-all duration-300 hover:shadow-xl rounded-xl bg-white border border-gray-200 hover:border-purple-500"
     >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl">
         <img
-          src={props.hotel.image}
-          alt={props.hotel.name}
-          className="object-cover w-full h-full absolute transition-transform group-hover:scale-105"
+          src={hotel.image}
+          alt={hotel.name}
+          className="object-cover w-full h-full absolute transition-transform duration-500 group-hover:scale-105"
         />
       </div>
 
-      <div className="mt-3 space-y-2">
-        <h3 className="font-semibold text-lg">{props.hotel.name}</h3>
-        <div className="flex items-center text-muted-foreground">
-          <MapPin className="h-4 w-4 mr-1" />
-          <span>{props.hotel.location}</span>
+      {/* Details */}
+      <div className="p-4 space-y-3">
+        {/* Name */}
+        <h3 className="font-semibold text-lg text-purple-700 group-hover:underline line-clamp-1">
+          {hotel.name}
+        </h3>
+
+        {/* Location */}
+        <div className="flex items-center text-sm text-gray-500">
+          <MapPin className="h-4 w-4 mr-1 text-purple-400" />
+          <span className="line-clamp-1">{hotel.location}</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <Star className="h-4 w-4 fill-primary text-primary" />
-          <span className="font-medium">{props.hotel?.rating ?? "No rating"}</span>
-          <span className="text-muted-foreground">
-            ({props.hotel.reviews?.toLocaleString() ?? "No"} Reviews)
+
+        {/* Rating & Reviews */}
+        <div className="flex items-center text-sm space-x-2">
+          <div className="flex items-center text-yellow-500">
+            <Star className="h-4 w-4 fill-yellow-400 mr-1" />
+            <span className="font-medium">{hotel?.rating ?? "N/A"}</span>
+          </div>
+          <span className="text-gray-400">
+            ({hotel.reviews?.toLocaleString() ?? "0"} reviews)
           </span>
         </div>
-        <div className="flex items-baseline space-x-2">
-          <span className="text-xl font-bold">${props.hotel.price}</span>
+
+        {/* Price */}
+        <div className="flex items-baseline space-x-1">
+          <span className="text-xl font-bold text-purple-700">${hotel.price}</span>
+          <span className="text-sm text-gray-400">/night</span>
         </div>
-        {typeof props.confidence === "number" && (
-          <span className="text-sm font-bold text-gray-400">Confidence {props.confidence * 100}%</span>
+
+        {/* Confidence */}
+        {typeof confidence === "number" && (
+          <div className="text-xs text-gray-500">
+            Confidence: <span className="font-semibold text-purple-600">{(confidence * 100).toFixed(0)}%</span>
+          </div>
         )}
       </div>
     </Link>
