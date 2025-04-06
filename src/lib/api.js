@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: `https://aidf-horizone-backend-nipun.onrender.com/api/`,
+    baseUrl: `https://aidf-horizone-backend-nipunbathiya.onrender.com/api/`,
     prepareHeaders: async (headers, { getState }) => {
       const token = await window?.Clerk?.session?.getToken();
 
