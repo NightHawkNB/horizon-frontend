@@ -293,8 +293,7 @@ const Hero = () => {
               Ready for your next adventure?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Sign up now to get exclusive deals and personalized
-              recommendations.
+              Sign up now to get started.
             </p>
             <div className="flex justify-center gap-2">
               <Button variant="ghost" asChild>
