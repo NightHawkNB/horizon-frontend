@@ -17,6 +17,7 @@ import { useParams } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import BookingForm from "@/components/BookingForm";
+import { SignedIn } from "@clerk/clerk-react";
 
 export default function HotelPage() {
   const { id } = useParams();
@@ -197,7 +198,9 @@ export default function HotelPage() {
               </p>
               <p className="text-sm text-muted-foreground">per night</p>
             </div>
-            <BookingForm hotel={hotel} />
+            <SignedIn>
+              <BookingForm hotel={hotel} />
+            </SignedIn>
           </div>
         </div>
       </div>
