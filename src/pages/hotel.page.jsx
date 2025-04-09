@@ -13,11 +13,12 @@ import {
   X,
   Check,
 } from "lucide-react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import BookingForm from "@/components/BookingForm";
-import { SignedIn } from "@clerk/clerk-react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
 
 export default function HotelPage() {
   const { id } = useParams();
@@ -201,6 +202,11 @@ export default function HotelPage() {
             <SignedIn>
               <BookingForm hotel={hotel} />
             </SignedIn>
+            <SignedOut>
+              <Button variant="ghost" asChild>
+                <Link to="/sign-in">Log In</Link>
+              </Button>
+            </SignedOut>
           </div>
         </div>
       </div>
