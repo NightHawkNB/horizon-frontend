@@ -296,19 +296,14 @@ const Hero = () => {
               Sign up now to get exclusive deals and personalized
               recommendations.
             </p>
-            <motion.button
-              className="px-8 py-3 bg-white text-purple-900 font-medium rounded-lg hover:bg-purple-100 transition duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Sign Up for Free
-            </motion.button>
-            <Button variant="ghost" asChild>
-              <Link to="/sign-in">Log In</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/sign-up">Sign Up</Link>
-            </Button>
+            <div className="flex justify-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link to="/sign-in">Log In</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/sign-up">Sign Up</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </SignedOut>
